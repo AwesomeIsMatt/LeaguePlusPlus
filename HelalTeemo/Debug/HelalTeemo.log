@@ -1,0 +1,5 @@
+﻿  HelalsTeemo.cpp
+c:\users\admin\documents\visual studio 2015\projects\helalteemo\helalteemo\color.h(20): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
+c:\users\admin\documents\visual studio 2015\projects\helalteemo\helalteemo\color.h(25): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
+  HelalTeemo.vcxproj -> c:\users\admin\documents\visual studio 2015\Projects\HelalTeemo\Debug\HelalTeemo.dll
+  HelalTeemo.vcxproj -> c:\users\admin\documents\visual studio 2015\Projects\HelalTeemo\Debug\HelalTeemo.pdb (Full PDB)

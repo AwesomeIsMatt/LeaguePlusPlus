@@ -7,6 +7,7 @@ IMenu* MainMenu;
 IMenu* ComboMenu;
 IMenu* HarassMenu;
 IMenu* LaneClearMenu;
+IMenu* JungleClearMenu;
 IMenu* Drawings;
 IMenu* MiscMenu;
 
@@ -21,6 +22,10 @@ IMenuOption* HarassManaManager;
 
 IMenuOption* LaneClearE;
 IMenuOption* LaneClearManaManager;
+
+IMenuOption* JungleClearQ;
+IMenuOption* JungleClearE;
+IMenuOption* JungleClearManaManager;
 
 IMenuOption* RforAlly;
 IMenuOption* RAlly;
@@ -45,6 +50,7 @@ void Menu()
 	ComboMenu = MainMenu->AddMenu("Combo");
 	HarassMenu = MainMenu->AddMenu("Harass");
 	LaneClearMenu = MainMenu->AddMenu("LaneClear");
+	JungleClearMenu = MainMenu->AddMenu("JungleClear");
 	Drawings = MainMenu->AddMenu("Drawings");
 	MiscMenu = MainMenu->AddMenu("Miscs");
 
@@ -59,6 +65,10 @@ void Menu()
 
 	LaneClearE = LaneClearMenu->CheckBox("Use E", true);
 	LaneClearManaManager = LaneClearMenu->AddFloat("ManaManager for E", 0, 100, 65);
+
+	JungleClearQ = JungleClearMenu->CheckBox("Use Q", true);
+	JungleClearE = JungleClearMenu->CheckBox("Use E", true);
+	JungleClearManaManager = JungleClearMenu->AddFloat("ManaManager", 0, 100, 65);
 
 	RforAlly = MiscMenu->CheckBox("Use R for Ally", true);
 	RAlly = MiscMenu->AddFloat("Use R when % Percent HP", 0, 100, 20);
@@ -75,7 +85,7 @@ void Menu()
 
 void LoadSpells()
 {
-	
+
 	Q = GPluginSDK->CreateSpell2(kSlotQ, kTargetCast, false, false, kCollidesWithWalls);
 	W = GPluginSDK->CreateSpell2(kSlotW, kTargetCast, false, false, kCollidesWithNothing);
 	E = GPluginSDK->CreateSpell2(kSlotE, kTargetCast, false, true, kCollidesWithWalls);
@@ -91,13 +101,13 @@ void Combo()
 	auto player = GEntityList->Player();
 	auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, W->Range());
 
-	if(ComboQ->Enabled() && Q->IsReady() && player->IsValidTarget(target, Q->Range()))
+	if (ComboQ->Enabled() && Q->IsReady() && player->IsValidTarget(target, Q->Range()))
 	{
 		Q->CastOnTarget(target);
 	}
 
 
-	if(ComboW->Enabled() && W->IsReady() && player->IsValidTarget(target, W->Range()))
+	if (ComboW->Enabled() && W->IsReady() && player->IsValidTarget(target, W->Range()))
 	{
 		W->CastOnPlayer();
 	}
@@ -115,7 +125,7 @@ void Harass()
 	auto player = GEntityList->Player();
 	auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, E->Range());
 
-	if(HarassE->Enabled() && E->IsReady() && player->IsValidTarget(target, E->Range()) && player->ManaPercent() >= HarassManaManager->GetFloat())
+	if (HarassE->Enabled() && E->IsReady() && player->IsValidTarget(target, E->Range()) && player->ManaPercent() >= HarassManaManager->GetFloat())
 	{
 		E->CastOnTarget(target);
 	}
@@ -125,14 +135,34 @@ void LaneClear()
 {
 	auto player = GEntityList->Player();
 
-	for(auto minion: GEntityList->GetAllMinions(false, true, false))
+	for (auto minion : GEntityList->GetAllMinions(false, true, false))
 	{
-		if(minion!= nullptr && minion->IsValidTarget(GEntityList->Player(), E->Range()) && player->ManaPercent() >= LaneClearManaManager->GetFloat() )
+		if (minion != nullptr && minion->IsValidTarget(GEntityList->Player(), E->Range()) && LaneClearE->Enabled() && player->ManaPercent() >= LaneClearManaManager->GetFloat())
 		{
 			E->CastOnTarget(minion);
 		}
 	}
-	
+
+}
+
+void JungleClear() {
+
+	auto player = GEntityList->Player();
+
+	for (auto junglemob : GEntityList->GetAllMinions(false, false, true)) {
+
+		if(junglemob != nullptr && junglemob->IsValidTarget(GEntityList->Player(), E->Range()) && JungleClearE->Enabled() && player->ManaPercent() >= JungleClearManaManager->GetFloat())
+		{
+			E->CastOnTarget(junglemob);
+		}
+
+		if(junglemob !=nullptr && junglemob->IsValidTarget(GEntityList->Player(), Q->Range()) && JungleClearQ->Enabled() && player->ManaPercent() >= JungleClearManaManager->GetFloat())
+		{
+			Q->CastOnTarget(junglemob);
+		}
+
+	}
+
 }
 
 void KayleR()
@@ -143,7 +173,7 @@ void KayleR()
 
 	auto player = GEntityList->Player();
 
-	if(ComboR->Enabled() && R->IsReady() && player->HealthPercent() <= RKayle->GetFloat())
+	if (ComboR->Enabled() && R->IsReady() && player->HealthPercent() <= RKayle->GetFloat())
 	{
 		R->CastOnPlayer();
 	}
@@ -155,9 +185,11 @@ void AllyR()
 	if (!R->IsReady() && !RAlly->Enabled())
 		return;
 
-	for(auto ally : GEntityList->GetAllHeros(true, false))
+	auto player = GEntityList->Player();
+
+	for (auto ally : GEntityList->GetAllHeros(true, false))
 	{
-		if(ally->IsValidTarget(ally, R->Range()) && R->IsReady() && RforAlly->Enabled() && ally->HealthPercent() <= RAlly->GetFloat())
+		if (player->IsValidTarget(ally, R->Range()) && R->IsReady() && RforAlly->Enabled() && ally->HealthPercent() <= RAlly->GetFloat())
 		{
 			R->CastOnTarget(ally);
 		}
@@ -166,10 +198,11 @@ void AllyR()
 
 void WHeals()
 {
-	
-	for(auto ally : GEntityList->GetAllHeros(true, false))
+	auto player = GEntityList->Player();
+
+	for (auto ally : GEntityList->GetAllHeros(true, false))
 	{
-		if(ally->IsValidTarget(ally, W->Range()) && W->IsReady() && WHeal->Enabled() && ally->HealthPercent() <= WHealer->GetFloat())
+		if (player->IsValidTarget(ally, W->Range()) && W->IsReady() && WHeal->Enabled() && ally->HealthPercent() <= WHealer->GetFloat())
 		{
 			W->CastOnTarget(ally);
 		}
@@ -180,24 +213,24 @@ void WHeals()
 void Drawing()
 {
 	auto player = GEntityList->Player();
-	if(DrawReady->Enabled())
+	if (DrawReady->Enabled())
 	{
-		if(Q->IsReady() && DrawQ->Enabled())
+		if (Q->IsReady() && DrawQ->Enabled())
 		{
 			GRender->DrawOutlinedCircle(player->GetPosition(), Vec4(225, 225, 0, 225), Q->Range());
 		}
 
-		if(W->IsReady() && DrawW->Enabled())
+		if (W->IsReady() && DrawW->Enabled())
 		{
 			GRender->DrawOutlinedCircle(player->GetPosition(), Vec4(225, 225, 0, 225), W->Range());
 		}
 
-		if(E->IsReady() && DrawE->Enabled())
+		if (E->IsReady() && DrawE->Enabled())
 		{
 			GRender->DrawOutlinedCircle(player->GetPosition(), Vec4(225, 225, 0, 225), E->Range());
 		}
-		
-		if(R->IsReady() && DrawR->Enabled())
+
+		if (R->IsReady() && DrawR->Enabled())
 		{
 			GRender->DrawOutlinedCircle(player->GetPosition(), Vec4(225, 225, 0, 225), R->Range());
 		}
@@ -205,22 +238,22 @@ void Drawing()
 
 	else
 	{
-		if(DrawQ->Enabled())
+		if (DrawQ->Enabled())
 		{
 			GRender->DrawOutlinedCircle(player->GetPosition(), Vec4(225, 225, 0, 225), Q->Range());
 		}
 
-		if(DrawW->Enabled())
+		if (DrawW->Enabled())
 		{
 			GRender->DrawOutlinedCircle(player->GetPosition(), Vec4(225, 225, 0, 225), W->Range());
 		}
 
-		if(DrawE->Enabled())
+		if (DrawE->Enabled())
 		{
 			GRender->DrawOutlinedCircle(player->GetPosition(), Vec4(225, 225, 0, 225), E->Range());
 		}
 
-		if(DrawR->Enabled())
+		if (DrawR->Enabled())
 		{
 			GRender->DrawOutlinedCircle(player->GetPosition(), Vec4(225, 225, 0, 225), R->Range());
 		}
@@ -235,20 +268,22 @@ PLUGIN_EVENT(void) OnRender()
 
 PLUGIN_EVENT(void) OnGameUpdate()
 {
-	if(GOrbwalking->GetOrbwalkingMode() == kModeCombo)
+	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
 	{
 		Combo();
 	}
 
-	if(GOrbwalking->GetOrbwalkingMode() == kModeMixed)
+	if (GOrbwalking->GetOrbwalkingMode() == kModeMixed)
 	{
 		Harass();
 	}
 
-	if(GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
+	if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
 	{
 		LaneClear();
+		JungleClear();
 	}
+
 
 	KayleR();
 	AllyR();
@@ -264,7 +299,7 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 	GEventManager->AddEventHandler(kEventOnRender, OnRender);
 	GEventManager->AddEventHandler(kEventOnGameUpdate, OnGameUpdate);
 
-	GRender->NotificationEx(Color::LightBlue().Get(), 2, true, true, "Helalmoneys Kayle LOADED");
+	GRender->NotificationEx(Color::LightBlue().Get(), 2, true, true, "Helalmoneys Kayle v1.1 LOADED");
 }
 
 PLUGIN_API void OnUnload()

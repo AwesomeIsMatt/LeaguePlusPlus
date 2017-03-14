@@ -1,0 +1,8 @@
+﻿  PluginSDK.cpp
+  HelalsQuinn.cpp
+c:\users\admin\documents\visual studio 2017\projects\helalsquinn\helalsquinn\color.h(20): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
+c:\users\admin\documents\visual studio 2017\projects\helalsquinn\helalsquinn\color.h(25): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
+  Generating Code...
+     Creating library c:\users\admin\documents\visual studio 2017\Projects\HelalsQuinn\Debug\HelalsQuinn.lib and object c:\users\admin\documents\visual studio 2017\Projects\HelalsQuinn\Debug\HelalsQuinn.exp
+  HelalsQuinn.vcxproj -> c:\users\admin\documents\visual studio 2017\Projects\HelalsQuinn\Debug\HelalsQuinn.dll
+  HelalsQuinn.vcxproj -> c:\users\admin\documents\visual studio 2017\Projects\HelalsQuinn\Debug\HelalsQuinn.pdb (Partial PDB)

@@ -8,6 +8,7 @@ IMenu* ComboMenu;
 IMenu* HarassMenu;
 IMenu* LaneClearMenu;
 IMenu* JungleClearMenu;
+IMenu* RSettings;
 IMenu* Drawings;
 IMenu* MiscMenu;
 
@@ -80,6 +81,14 @@ void Menu()
 	DrawW = Drawings->CheckBox("Draw W", true);
 	DrawE = Drawings->CheckBox("Draw E", true);
 	DrawR = Drawings->CheckBox("Draw R", true);
+
+	RSettings = MainMenu->AddMenu("R Settings");
+
+	// by Kornis
+	for(auto ally : GEntityList->GetAllHeros(true, false))
+	{
+		RSettings->CheckBox(ally->ChampionName(), true);
+	}
 
 }
 
@@ -173,10 +182,18 @@ void KayleR()
 
 	auto player = GEntityList->Player();
 
-	if (ComboR->Enabled() && R->IsReady() && player->HealthPercent() <= RKayle->GetFloat())
+	for(auto ally : GEntityList->GetAllHeros(true, false))
 	{
-		R->CastOnPlayer();
+
+		IMenuOption * temp = RSettings->GetOption(ally->ChampionName());
+
+			if (ComboR->Enabled() && R->IsReady() && player->HealthPercent() <= RKayle->GetFloat() && temp ->Enabled())
+			{
+				R->CastOnPlayer();
+			}
+		
 	}
+
 }
 
 
@@ -189,10 +206,17 @@ void AllyR()
 
 	for (auto ally : GEntityList->GetAllHeros(true, false))
 	{
-		if (player->IsValidTarget(ally, R->Range()) && R->IsReady() && RforAlly->Enabled() && ally->HealthPercent() <= RAlly->GetFloat())
+		for (auto allyR : GEntityList->GetAllHeros(true, false))
 		{
-			R->CastOnTarget(ally);
+
+			IMenuOption * temp = RSettings->GetOption(ally->ChampionName());
+
+			if (player->IsValidTarget(ally, R->Range()) && R->IsReady() && RforAlly->Enabled() && ally->HealthPercent() <= RAlly->GetFloat() && temp->Enabled())
+			{
+				R->CastOnTarget(ally);
+			}
 		}
+
 	}
 }
 

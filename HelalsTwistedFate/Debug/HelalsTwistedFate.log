@@ -1,0 +1,7 @@
+﻿  PluginSDK.cpp
+  HelalsTwistedFate.cpp
+c:\users\admin\documents\visual studio 2017\projects\helalstwistedfate\helalstwistedfate\color.h(20): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
+c:\users\admin\documents\visual studio 2017\projects\helalstwistedfate\helalstwistedfate\color.h(25): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
+  Generating Code...
+  HelalsTwistedFate.vcxproj -> c:\users\admin\documents\visual studio 2017\Projects\HelalsTwistedFate\Debug\HelalsTwistedFate.dll
+  HelalsTwistedFate.vcxproj -> c:\users\admin\documents\visual studio 2017\Projects\HelalsTwistedFate\Debug\HelalsTwistedFate.pdb (Partial PDB)

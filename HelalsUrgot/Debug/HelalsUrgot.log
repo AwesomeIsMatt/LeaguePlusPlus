@@ -1,0 +1,8 @@
+﻿  PluginSDK.cpp
+  HelalsUrgot.cpp
+c:\users\admin\documents\visual studio 2017\projects\helalsurgot\helalsurgot\color.h(20): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
+c:\users\admin\documents\visual studio 2017\projects\helalsurgot\helalsurgot\color.h(25): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
+  Generating Code...
+     Creating library c:\users\admin\documents\visual studio 2017\Projects\HelalsUrgot\Debug\HelalsUrgot.lib and object c:\users\admin\documents\visual studio 2017\Projects\HelalsUrgot\Debug\HelalsUrgot.exp
+  HelalsUrgot.vcxproj -> c:\users\admin\documents\visual studio 2017\Projects\HelalsUrgot\Debug\HelalsUrgot.dll
+  HelalsUrgot.vcxproj -> c:\users\admin\documents\visual studio 2017\Projects\HelalsUrgot\Debug\HelalsUrgot.pdb (Partial PDB)

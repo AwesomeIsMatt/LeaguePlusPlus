@@ -1,0 +1,10 @@
+﻿  HelalsUrgot.cpp
+c:\users\admin\documents\visual studio 2017\projects\helalsurgot\helalsurgot\Color.h(20): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
+c:\users\admin\documents\visual studio 2017\projects\helalsurgot\helalsurgot\Color.h(25): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
+     Creating library c:\users\admin\documents\visual studio 2017\Projects\HelalsUrgot\Release\HelalsUrgot.lib and object c:\users\admin\documents\visual studio 2017\Projects\HelalsUrgot\Release\HelalsUrgot.exp
+  Generating code
+  0 of 50 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  HelalsUrgot.vcxproj -> c:\users\admin\documents\visual studio 2017\Projects\HelalsUrgot\Release\HelalsUrgot.dll

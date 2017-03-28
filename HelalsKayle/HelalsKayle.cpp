@@ -189,7 +189,11 @@ void KayleR()
 
 			if (ComboR->Enabled() && R->IsReady() && player->HealthPercent() <= RKayle->GetFloat() && temp ->Enabled())
 			{
-				R->CastOnPlayer();
+				if (!GUtility->IsPositionInFountain(ally->GetPosition(), true, false) && !GUtility->IsPositionInFountain(player->GetPosition(), true, false))
+				{
+					R->CastOnPlayer();
+				}
+				
 			}
 		
 	}
@@ -213,7 +217,11 @@ void AllyR()
 
 			if (player->IsValidTarget(ally, R->Range()) && R->IsReady() && RforAlly->Enabled() && ally->HealthPercent() <= RAlly->GetFloat() && temp->Enabled())
 			{
-				R->CastOnTarget(ally);
+				if(!GUtility->IsPositionInFountain(ally->GetPosition(), true, false) && !GUtility->IsPositionInFountain(player->GetPosition(), true, false))
+				{
+					R->CastOnTarget(ally);
+				}
+				
 			}
 		}
 
@@ -228,7 +236,11 @@ void WHeals()
 	{
 		if (player->IsValidTarget(ally, W->Range()) && W->IsReady() && WHeal->Enabled() && ally->HealthPercent() <= WHealer->GetFloat())
 		{
-			W->CastOnTarget(ally);
+			if (!GUtility->IsPositionInFountain(ally->GetPosition(), true, false) && !GUtility->IsPositionInFountain(player->GetPosition(), true, false))
+			{
+				W->CastOnTarget(ally);
+			}
+			
 		}
 	}
 
@@ -323,7 +335,7 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 	GEventManager->AddEventHandler(kEventOnRender, OnRender);
 	GEventManager->AddEventHandler(kEventOnGameUpdate, OnGameUpdate);
 
-	GRender->NotificationEx(Color::LightBlue().Get(), 2, true, true, "Helalmoneys Kayle v2.0 LOADED");
+	GRender->NotificationEx(Color::LightBlue().Get(), 2, true, true, "Helalmoneys Kayle v2.1 LOADED");
 }
 
 PLUGIN_API void OnUnload()

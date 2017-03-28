@@ -1,9 +1,10 @@
 ﻿  HelalsKayle.cpp
 c:\users\admin\documents\visual studio 2017\projects\helalskayle\helalskayle\Color.h(20): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
 c:\users\admin\documents\visual studio 2017\projects\helalskayle\helalskayle\Color.h(25): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
+  PluginSDK.cpp
      Creating library C:\Users\Admin\Documents\Visual Studio 2017\Projects\HelalsKayle\Release\HelalsKayle.lib and object C:\Users\Admin\Documents\Visual Studio 2017\Projects\HelalsKayle\Release\HelalsKayle.exp
   Generating code
-  1 of 50 functions ( 2.0%) were compiled, the rest were copied from previous compilation.
+  0 of 50 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
     0 functions had inline decision re-evaluated but remain unchanged
   Finished generating code

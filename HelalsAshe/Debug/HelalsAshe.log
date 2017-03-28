@@ -1,0 +1,8 @@
+﻿  PluginSDK.cpp
+  HelalsAshe.cpp
+c:\users\admin\documents\visual studio 2017\projects\helalsashe\helalsashe\color.h(20): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
+c:\users\admin\documents\visual studio 2017\projects\helalsashe\helalsashe\color.h(25): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
+  Generating Code...
+     Creating library c:\users\admin\documents\visual studio 2017\Projects\HelalsAshe\Debug\HelalsAshe.lib and object c:\users\admin\documents\visual studio 2017\Projects\HelalsAshe\Debug\HelalsAshe.exp
+  HelalsAshe.vcxproj -> c:\users\admin\documents\visual studio 2017\Projects\HelalsAshe\Debug\HelalsAshe.dll
+  HelalsAshe.vcxproj -> c:\users\admin\documents\visual studio 2017\Projects\HelalsAshe\Debug\HelalsAshe.pdb (Partial PDB)

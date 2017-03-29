@@ -156,7 +156,7 @@ void RGlobal()
 	{
 		IMenuOption * temp = RWhitelist->GetOption(ally->ChampionName());
 
-		if (HealR->Enabled() && R->IsReady() && player->HealthPercent() <= RHealManager->GetFloat() || ally->HealthPercent() <= RHealManager->GetInteger())
+		if (HealR->Enabled() && R->IsReady() && player->HealthPercent() <= RHealManager->GetInteger() || ally->HealthPercent() <= RHealManager->GetInteger())
 		{
 			if (temp->Enabled())
 			{

@@ -1,10 +1,10 @@
 ﻿  HelalsSoraka.cpp
 c:\users\admin\documents\visual studio 2017\projects\helalssoraka\helalssoraka\Color.h(20): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
 c:\users\admin\documents\visual studio 2017\projects\helalssoraka\helalssoraka\Color.h(25): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
-     Creating library C:\Users\Admin\Documents\Visual Studio 2017\Projects\HelalsSoraka\Release\HelalsSoraka.lib and object C:\Users\Admin\Documents\Visual Studio 2017\Projects\HelalsSoraka\Release\HelalsSoraka.exp
+     Creating library C:\Users\Admin\documents\visual studio 2017\Projects\HelalsSoraka\Release\HelalsSoraka.lib and object C:\Users\Admin\documents\visual studio 2017\Projects\HelalsSoraka\Release\HelalsSoraka.exp
   Generating code
-  0 of 47 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+  4 of 47 functions ( 8.5%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    0 functions had inline decision re-evaluated but remain unchanged
+    1 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
-  HelalsSoraka.vcxproj -> C:\Users\Admin\Documents\Visual Studio 2017\Projects\HelalsSoraka\Release\HelalsSoraka.dll
+  HelalsSoraka.vcxproj -> C:\Users\Admin\documents\visual studio 2017\Projects\HelalsSoraka\Release\HelalsSoraka.dll

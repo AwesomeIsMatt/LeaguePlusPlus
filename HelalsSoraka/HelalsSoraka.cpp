@@ -59,7 +59,7 @@ void Menu()
 	RSettings = MainMenu->AddMenu("R Heal Settings");
 	{
 		HealR = RSettings->CheckBox("Use R", true);
-		RHealManager = RSettings->AddFloat("Use R if HP % <", 0, 100, 30);
+		RHealManager = RSettings->AddInteger("Use R if HP % <", 0, 100, 30);
 
 		RWhitelist = RSettings->AddMenu("R Whitelist");
 		for (auto ally : GEntityList->GetAllHeros(true, false))
@@ -156,7 +156,7 @@ void RGlobal()
 	{
 		IMenuOption * temp = RWhitelist->GetOption(ally->ChampionName());
 
-		if (HealR->Enabled() && R->IsReady() && player->HealthPercent() <= RHealManager->GetFloat() || ally->HealthPercent() <= RHealManager->GetFloat())
+		if (HealR->Enabled() && R->IsReady() && player->HealthPercent() <= RHealManager->GetFloat() || ally->HealthPercent() <= RHealManager->GetInteger())
 		{
 			if (temp->Enabled())
 			{

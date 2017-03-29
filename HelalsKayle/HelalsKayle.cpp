@@ -14,6 +14,7 @@ IMenu* MiscMenu;
 
 IMenuOption* ComboQ;
 IMenuOption* ComboW;
+IMenuOption* ComboWManager;
 IMenuOption* ComboE;
 IMenuOption* ComboR;
 IMenuOption* RKayle;
@@ -57,6 +58,7 @@ void Menu()
 
 	ComboQ = ComboMenu->CheckBox("Use Q", true);
 	ComboW = ComboMenu->CheckBox("Use W", true);
+	ComboWManager = ComboMenu->AddFloat("Q/W in Combo if Mana >", 0, 100, 30);
 	ComboE = ComboMenu->CheckBox("Use E", true);
 	ComboR = ComboMenu->CheckBox("Use R for Kayle only", true);
 	RKayle = ComboMenu->AddFloat("Use R when % Percent HP", 0, 100, 20);
@@ -112,11 +114,17 @@ void Combo()
 
 	if (ComboQ->Enabled() && Q->IsReady() && player->IsValidTarget(target, Q->Range()))
 	{
-		Q->CastOnTarget(target);
+		auto targetDistance = (target->GetPosition() - GEntityList->Player()->GetPosition()).Length();
+
+		if(targetDistance > E->Range() || !E->IsReady())
+		{
+			Q->CastOnTarget(target);
+		}
+		
 	}
 
 
-	if (ComboW->Enabled() && W->IsReady() && player->IsValidTarget(target, W->Range()))
+	if (ComboW->Enabled() && W->IsReady() && player->IsValidTarget(target, W->Range()) && player->ManaPercent() >= ComboWManager->GetFloat())
 	{
 		W->CastOnPlayer();
 	}
@@ -160,14 +168,21 @@ void JungleClear() {
 
 	for (auto junglemob : GEntityList->GetAllMinions(false, false, true)) {
 
-		if(junglemob != nullptr && junglemob->IsValidTarget(GEntityList->Player(), E->Range()) && JungleClearE->Enabled() && player->ManaPercent() >= JungleClearManaManager->GetFloat())
+		if(junglemob != nullptr && junglemob->IsValidTarget(GEntityList->Player(), E->Range()) && JungleClearE->Enabled() && E->IsReady() && player->ManaPercent() >= JungleClearManaManager->GetFloat())
 		{
-			E->CastOnTarget(junglemob);
+			if(!junglemob->IsDead() && junglemob->IsValidTarget())
+			{
+				E->CastOnTarget(junglemob);
+			}	
 		}
 
-		if(junglemob !=nullptr && junglemob->IsValidTarget(GEntityList->Player(), Q->Range()) && JungleClearQ->Enabled() && player->ManaPercent() >= JungleClearManaManager->GetFloat())
+		if(junglemob !=nullptr && junglemob->IsValidTarget(GEntityList->Player(), Q->Range()) && JungleClearQ->Enabled() && Q->IsReady() && player->ManaPercent() >= JungleClearManaManager->GetFloat())
 		{
-			Q->CastOnTarget(junglemob);
+			if (!junglemob->IsDead() && junglemob->IsValidTarget())
+			{
+				Q->CastOnTarget(junglemob);
+			}
+			
 		}
 
 	}
@@ -335,7 +350,7 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 	GEventManager->AddEventHandler(kEventOnRender, OnRender);
 	GEventManager->AddEventHandler(kEventOnGameUpdate, OnGameUpdate);
 
-	GRender->NotificationEx(Color::LightBlue().Get(), 2, true, true, "Helalmoneys Kayle v2.1 LOADED");
+	GRender->NotificationEx(Color::LightBlue().Get(), 2, true, true, "Helalmoneys Kayle v2.2 LOADED");
 }
 
 PLUGIN_API void OnUnload()

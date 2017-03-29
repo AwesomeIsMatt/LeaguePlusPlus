@@ -47,7 +47,7 @@ void Menu()
 	HealingMenu = MainMenu->AddMenu("Healing");
 	{
 		HealW = HealingMenu->CheckBox("Use W", true);
-		HealManager = HealingMenu->AddFloat("Heal", 0, 100, 65);
+		HealManager = HealingMenu->AddInteger("Heal", 0, 100, 65);
 	}
 
 	HarassMenu = MainMenu->AddMenu("Harass");
@@ -62,7 +62,7 @@ void Menu()
 		RHealManager = RSettings->AddFloat("Use R if HP % <", 0, 100, 30);
 
 		RWhitelist = RSettings->AddMenu("R Whitelist");
-		for(auto ally : GEntityList->GetAllHeros(true, false))
+		for (auto ally : GEntityList->GetAllHeros(true, false))
 		{
 			RWhitelist->CheckBox(ally->ChampionName(), true);
 		}
@@ -77,7 +77,7 @@ void Menu()
 	}
 
 
-	
+
 }
 
 void LoadSpells()
@@ -93,12 +93,12 @@ void Combo()
 	auto player = GEntityList->Player();
 	auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, Q->Range());
 
-	if(ComboQ->Enabled() && Q->IsReady() && player->IsValidTarget(target, Q->Range()))
+	if (ComboQ->Enabled() && Q->IsReady() && player->IsValidTarget(target, Q->Range()))
 	{
 		Q->CastOnTarget(target, kHitChanceHigh);
 	}
 
-	if(ComboE->Enabled() && E->IsReady() && player->IsValidTarget(target, E->Range()))
+	if (ComboE->Enabled() && E->IsReady() && player->IsValidTarget(target, E->Range()))
 	{
 		E->CastOnTarget(target, kHitChanceHigh);
 	}
@@ -122,21 +122,29 @@ void Harass()
 
 }
 
-void WHealings()
+void Healings()
 {
 
 	auto player = GEntityList->Player();
 
 	for(auto ally : GEntityList->GetAllHeros(true, false))
 	{
-		if(player->IsValidTarget(ally, W->Range()) && W->IsReady() && W->Range() && HealW->Enabled() && ally->HealthPercent() <= HealManager->GetFloat())
+		if(ally != GEntityList->Player())
 		{
-			if(!ally->IsDead())
+			if(HealW->Enabled() && W->IsReady() && ally->IsValidTarget(GEntityList->Player(), W->Range()))
 			{
-				W->CastOnTarget(ally);
+				if(ally->HealthPercent() < HealManager->GetInteger())
+				{
+					if(!GUtility->IsPositionInFountain(ally->GetPosition(), true, false))
+					{
+						W->CastOnUnit(ally);
+					}
+					
+				}
 			}
 		}
 	}
+
 
 }
 
@@ -144,20 +152,20 @@ void RGlobal()
 {
 	auto player = GEntityList->Player();
 
-	for(auto ally : GEntityList->GetAllHeros(true,false))
+	for (auto ally : GEntityList->GetAllHeros(true, false))
 	{
 		IMenuOption * temp = RWhitelist->GetOption(ally->ChampionName());
 
 		if (HealR->Enabled() && R->IsReady() && player->HealthPercent() <= RHealManager->GetFloat() || ally->HealthPercent() <= RHealManager->GetFloat())
 		{
-			if(temp->Enabled())
+			if (temp->Enabled())
 			{
 				if (!GUtility->IsPositionInFountain(ally->GetPosition(), true, false) && !GUtility->IsPositionInFountain(player->GetPosition(), true, false))
 				{
 					R->CastOnPlayer();
 				}
 			}
-			
+
 		}
 	}
 
@@ -207,21 +215,22 @@ void Drawing()
 
 PLUGIN_EVENT(void) OnGameUpdate()
 {
-	
-	RGlobal();
-	WHealings();
 
-	if(GOrbwalking->GetOrbwalkingMode() == kModeCombo)
+	RGlobal();
+	Healings();
+
+	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
 	{
-		Combo();
+		Combo(); 
+		Healings();
 	}
 
-	if(GOrbwalking->GetOrbwalkingMode() == kModeMixed)
+	if (GOrbwalking->GetOrbwalkingMode() == kModeMixed)
 	{
 		Harass();
 	}
 
-	
+
 }
 
 PLUGIN_EVENT(void) OnRender()

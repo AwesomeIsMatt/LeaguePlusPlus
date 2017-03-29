@@ -20,7 +20,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{35BE7B6B-D21E-4537-A53A-D3E9C9873FF0}</ProjectGuid>
+    <ProjectGuid>{A7F51423-C37C-4072-941E-2AF4A68AA60D}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>HelalsSoraka</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>

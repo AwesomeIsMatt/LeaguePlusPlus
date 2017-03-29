@@ -27,6 +27,10 @@ IMenuOption* JungleW;
 IMenuOption* SemiR;
 IMenuOption* SemiRToggle;
 
+IMenuOption* DrawReady;
+IMenuOption* DrawQ;
+IMenuOption* DrawW;
+
 ISpell2* Q;
 ISpell2* W;
 ISpell2* E;
@@ -61,6 +65,10 @@ void Menu()
 		SemiRToggle = MiscMenu->AddKey("Toggle", 71);
 	}
 	
+	Drawings = MainMenu->AddMenu("Drawings");
+	DrawReady = Drawings->CheckBox("Draw Ready Spells", true);
+	DrawQ = Drawings->CheckBox("Draw Q", true);
+	DrawW = Drawings->CheckBox("Draw W", true);
 }
 
 void LoadSpells()
@@ -168,6 +176,43 @@ void ManualR()
 			}
 		}
 	}
+}
+
+void Drawing()
+{
+	auto player = GEntityList->Player();
+	if (DrawReady->Enabled())
+	{
+		if (Q->IsReady() && DrawQ->Enabled())
+		{
+			GRender->DrawOutlinedCircle(player->GetPosition(), Vec4(225, 225, 0, 225), Q->Range());
+		}
+
+		if (W->IsReady() && DrawW->Enabled())
+		{
+			GRender->DrawOutlinedCircle(player->GetPosition(), Vec4(225, 225, 0, 225), W->Range());
+		}
+
+	}
+
+	else
+	{
+		if (DrawQ->Enabled())
+		{
+			GRender->DrawOutlinedCircle(player->GetPosition(), Vec4(225, 225, 0, 225), Q->Range());
+		}
+
+		if (DrawW->Enabled())
+		{
+			GRender->DrawOutlinedCircle(player->GetPosition(), Vec4(225, 225, 0, 225), W->Range());
+		}
+
+	}
+}
+
+PLUGIN_EVENT(void) OnRender()
+{
+	Drawing();
 }
 
 PLUGIN_EVENT(void) OnGameUpdate()

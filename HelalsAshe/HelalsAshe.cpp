@@ -245,15 +245,17 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 	Menu();
 	LoadSpells();
 
+	GEventManager->AddEventHandler(kEventOnRender, OnRender);
 	GEventManager->AddEventHandler(kEventOnGameUpdate, OnGameUpdate);
 
-	GRender->NotificationEx(Color::LightBlue().Get(), 2, true, true, "Helalmoneys Ashe v1.0 LOADED");
+	GRender->NotificationEx(Color::LightBlue().Get(), 2, true, true, "Helalmoneys Ashe v1.1 LOADED");
 }
 
 PLUGIN_API void OnUnload()
 {
 	MainMenu->Remove();
 
+	GEventManager->RemoveEventHandler(kEventOnRender, OnRender);
 	GEventManager->RemoveEventHandler(kEventOnGameUpdate, OnGameUpdate);
 
 	GRender->NotificationEx(Color::LightBlue().Get(), 2, true, true, "Ashe UNLOADED");

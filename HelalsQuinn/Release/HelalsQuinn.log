@@ -3,7 +3,7 @@ c:\users\admin\documents\visual studio 2017\projects\helalsquinn\helalsquinn\Col
 c:\users\admin\documents\visual studio 2017\projects\helalsquinn\helalsquinn\Color.h(25): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
      Creating library C:\Users\Admin\Documents\Visual Studio 2017\Projects\HelalsQuinn\Release\HelalsQuinn.lib and object C:\Users\Admin\Documents\Visual Studio 2017\Projects\HelalsQuinn\Release\HelalsQuinn.exp
   Generating code
-  35 of 45 functions (77.8%) were compiled, the rest were copied from previous compilation.
+  0 of 125 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
     0 functions had inline decision re-evaluated but remain unchanged
   Finished generating code

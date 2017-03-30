@@ -9,11 +9,12 @@ IMenu* ComboMenu;
 IMenu* HarassMenu;
 IMenu* JungleMenu;
 IMenu* Drawings;
+IMenu* AntiG;
 IMenu* MiscMenu;
 
 IMenuOption* ComboQ;
+IMenuOption* ComboW;
 IMenuOption* ComboE;
-IMenuOption* ComboR;
 
 IMenuOption* HarassQ;
 IMenuOption* HarassE;
@@ -22,6 +23,10 @@ IMenuOption* HarassManaManager;
 IMenuOption* JungleQ;
 IMenuOption* JungleE;
 IMenuOption* JungleManaManager;
+
+IMenuOption* AutoUlt;
+
+IMenuOption* EGap;
 
 IMenuOption* DrawReady;
 IMenuOption* DrawQ;
@@ -40,11 +45,13 @@ void Menu()
 	ComboMenu = MainMenu->AddMenu("Combo");
 	HarassMenu = MainMenu->AddMenu("Harass");
 	JungleMenu = MainMenu->AddMenu("Jungle Clear");
+	AntiG = MainMenu->AddMenu("Anti Gapcloser");
+	MiscMenu = MainMenu->AddMenu("Auto R Settings");
 	Drawings = MainMenu->AddMenu("Drawings");
 
 	ComboQ = ComboMenu->CheckBox("Use Q", true);
+	//ComboW = ComboMenu->CheckBox("Use W", true);
 	ComboE = ComboMenu->CheckBox("Use E", true);
-	ComboR = ComboMenu->CheckBox("Use R", true);
 
 	HarassQ = HarassMenu->CheckBox("Use Q", true);
 	HarassE = HarassMenu->CheckBox("Use E", true);
@@ -53,6 +60,10 @@ void Menu()
 	JungleQ = JungleMenu->CheckBox("Use Q", true);
 	JungleE = JungleMenu->CheckBox("Use E", true);
 	JungleManaManager = JungleMenu->AddFloat("ManaManager", 0, 100, 50);
+
+	AutoUlt = MiscMenu->CheckBox("Auto R in Base", true);
+
+	EGap = AntiG->CheckBox("Use E for AntiGapclose", true);
 
 	DrawReady = Drawings->CheckBox("Draw Ready Spells", true);
 	DrawQ = Drawings->CheckBox("Draw Q", true);
@@ -74,10 +85,11 @@ void LoadSpells()
 
 void Combo()
 {
-	auto player = GEntityList->Player();
-	auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, E->Range());
 
-	if (ComboQ->Enabled() && Q->IsReady() && player->IsValidTarget(target, Q->Range()))
+	auto player = GEntityList->Player();
+	auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
+
+	if(ComboQ->Enabled() && Q->IsReady() && player->IsValidTarget(target, Q->Range()))
 	{
 		if(!target->HasBuff("QuinnW"))
 		{
@@ -85,16 +97,13 @@ void Combo()
 		}
 	}
 
-
-	if (ComboE->Enabled() && E->IsReady() && player->IsValidTarget(target, E->Range()))
+	if(ComboE->Enabled() && E->IsReady() && player->IsValidTarget(target, E->Range()))
 	{
 		if(!target->HasBuff("QuinnW"))
 		{
 			E->CastOnTarget(target);
 		}
-
 	}
-
 
 }
 
@@ -128,15 +137,58 @@ void JungleClear()
 	{
 		if(junglemob !=nullptr && junglemob->IsValidTarget(GEntityList->Player(), Q->Range()) && JungleQ->Enabled() && player->ManaPercent() >= JungleManaManager->GetFloat())
 		{
-			Q->CastOnTarget(junglemob);
+			{
+				if(!junglemob->IsDead() && junglemob->IsValidTarget())
+				{
+					Q->CastOnTarget(junglemob);
+				}
+			}
+			
 		}
 
 		if (junglemob != nullptr && junglemob->IsValidTarget(GEntityList->Player(), E->Range()) && JungleE->Enabled() && player->ManaPercent() >= JungleManaManager->GetFloat())
 		{
-			E->CastOnTarget(junglemob);
+			if(!junglemob->IsDead() && junglemob->IsValidTarget())
+			{
+				E->CastOnTarget(junglemob);
+			}
+			
 		}
 	}
 }
+
+void AutoR()
+{
+	if (!R->IsReady() && !AutoUlt->Enabled())
+		return;
+
+	auto player = GEntityList->Player();
+
+	if(GUtility->IsPositionInFountain(player->GetPosition(), true, false) && std::string(GEntityList->Player()->GetSpellName(kSlotR)) == "QuinnR")
+	{
+		R->CastOnPlayer();
+	}
+
+}
+
+void AutoW()
+{
+
+
+	for(auto target : GEntityList->GetAllHeros(false, true))
+	{
+		auto lastPos = target->GetPosition();
+		if(!target->IsVisible())
+		{
+			if(W->IsReady() && (GEntityList->Player()->GetPosition() - lastPos).Length2D() <= E->Range())
+			{
+				W->CastOnPlayer();
+			}
+		}
+	}
+
+}
+
 
 void Drawing()
 {
@@ -177,6 +229,16 @@ void Drawing()
 	}
 }
 
+PLUGIN_EVENT(void) OnGapcloser(GapCloserSpell const& Args)
+{
+	if (Args.Sender != nullptr && Args.Sender != GEntityList->Player() && Args.Sender->IsEnemy(GEntityList->Player()) && GEntityList->Player()->IsValidTarget(Args.Sender, 525.f + Args.Sender->BoundingRadius()) && EGap->Enabled() && E->IsReady())
+	{
+		E->CastOnTarget(Args.Sender);
+	}
+}
+
+
+
 PLUGIN_EVENT(void) OnRender()
 {
 	Drawing();
@@ -185,6 +247,9 @@ PLUGIN_EVENT(void) OnRender()
 
 PLUGIN_EVENT(void) OnGameUpdate()
 {
+	AutoR();
+	AutoW();
+
 	if(GOrbwalking->GetOrbwalkingMode() == kModeCombo)
 	{
 		Combo();
@@ -208,8 +273,11 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 	LoadSpells();
 	GEventManager->AddEventHandler(kEventOnRender, OnRender);
 	GEventManager->AddEventHandler(kEventOnGameUpdate, OnGameUpdate);
+	GEventManager->AddEventHandler(kEventOnGapCloser, OnGapcloser);
 
-	GRender->NotificationEx(Color::LightBlue().Get(), 2, true, true, "Helalmoneys Quinn v1.0 LOADED");
+
+
+	GRender->NotificationEx(Color::LightBlue().Get(), 2, true, true, "Helalmoneys Quinn v2.0 LOADED");
 
 }
 
@@ -218,6 +286,7 @@ PLUGIN_API void OnUnload()
 	MainMenu->Remove();
 	GEventManager->RemoveEventHandler(kEventOnRender, OnRender);
 	GEventManager->RemoveEventHandler(kEventOnGameUpdate, OnGameUpdate);
+	GEventManager->RemoveEventHandler(kEventOnGapCloser, OnGapcloser);
 
-	GRender->NotificationEx(Color::LightBlue().Get(), 2, true, true, "Helalmoneys Quinn v1.0 UNLOADED");
+	GRender->NotificationEx(Color::LightBlue().Get(), 2, true, true, "Quinn UNLOADED");
 }

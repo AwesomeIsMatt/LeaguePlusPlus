@@ -6,8 +6,10 @@ PluginSetup("HelalsUrgot");
 IMenu* MainMenu;
 IMenu* ComboMenu;
 IMenu* HarassMenu;
+IMenu* LaneClearMenu;
 IMenu* LastHitMenu;;
 IMenu* JungleClearMenu;
+IMenu* MiscsMenu;
 IMenu* Drawings;
 
 IMenuOption* ComboQ;
@@ -17,7 +19,13 @@ IMenuOption* ComboE;
 IMenuOption* HarassQ;
 IMenuOption* HarassManaManager;
 
+IMenuOption* LaneClearQ;
+IMenuOption* LaneClearManaManager;
+
 IMenuOption* LastQ;
+
+IMenuOption* AutoTear;
+IMenuOption* AutoTearManager;
 
 IMenuOption* DrawReady;
 IMenuOption* DrawQ;
@@ -37,7 +45,9 @@ void Menu()
 	
 	ComboMenu = MainMenu->AddMenu("Combo");
 	HarassMenu = MainMenu->AddMenu("Harass");
+	LaneClearMenu = MainMenu->AddMenu("LaneClear");
 	LastHitMenu = MainMenu->AddMenu("Lasthit");
+	MiscsMenu = MainMenu->AddMenu("Miscs");
 	Drawings = MainMenu->AddMenu("Drawings");
 
 	ComboQ = ComboMenu->CheckBox("Use Q", true);
@@ -45,9 +55,15 @@ void Menu()
 	ComboE = ComboMenu->CheckBox("Use E", true);
 	
 	HarassQ = HarassMenu->CheckBox("Use Q", true);
-	HarassManaManager = HarassMenu->AddFloat("ManaManager", 0, 100, 65);
+	HarassManaManager = HarassMenu->AddInteger("ManaManager", 0, 100, 65);
+
+	LaneClearQ = LaneClearMenu->CheckBox("Use Q", true);
+	LaneClearManaManager = LaneClearMenu->AddInteger("ManaManager", 0, 100, 50);
 
 	LastQ = LastHitMenu->CheckBox("Use Q", true);
+
+	AutoTear = MiscsMenu->CheckBox("Stack Tear", true);
+	AutoTearManager = MiscsMenu->AddInteger("Stack if Mana > ", 0, 100, 50);
 
 	DrawReady = Drawings->CheckBox("Draw Ready Spells", true);
 	DrawQ = Drawings->CheckBox("Draw Q", true);
@@ -99,10 +115,37 @@ void Harass()
 {
 	auto player = GEntityList->Player();
 	auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
+	auto target2 = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q2->Range());
 
-	if(HarassQ->Enabled() && Q->IsReady() && player->IsValidTarget(target, Q->Range()) && player->ManaPercent() >= HarassManaManager->GetFloat())
+
+	if (ComboE->Enabled() && E->IsReady() && player->IsValidTarget(target, E->Range()))
 	{
-		Q->CastOnTarget(target, kHitChanceHigh);
+		E->CastOnTarget(target, kHitChanceHigh);
+	}
+
+	if(HarassQ->Enabled() && Q->IsReady() && player->IsValidTarget(target, Q2->Range()) && target2->HasBuff("UrgotCorrosiveDebuff")){}
+	{
+		if(player->ManaPercent() >= HarassManaManager->GetInteger())
+		{
+			Q2->CastOnTarget(target2);
+		}
+	}
+}
+
+void LaneClear()
+{
+	auto player = GEntityList->Player();
+
+	for (auto minion : GEntityList->GetAllMinions(false, true, false))
+	{
+		if (minion != nullptr && minion->IsValidTarget(GEntityList->Player(), Q->Range()) && LaneClearQ->Enabled() && player->ManaPercent() >= LaneClearManaManager->GetInteger())
+		{
+			if(!minion->IsDead())
+			{
+				Q->CastOnTarget(minion, kHitChanceLow);
+			}
+			
+		}
 	}
 }
 
@@ -153,6 +196,36 @@ void _OnOrbwalkPreAttack(IUnit* minion)
 	}
 }
 
+void AutoStackTear()
+{
+	auto tear = GPluginSDK->CreateItemForId(3070, 0);
+	auto manamune = GPluginSDK->CreateItemForId(3004, 0);
+	auto player = GEntityList->Player();
+
+	if (!tear->IsOwned() && !AutoTear->Enabled())
+		return;
+
+	if(tear->IsOwned() && AutoTear->Enabled() && GUtility->IsPositionInFountain(player->GetPosition(), true, false))
+	{
+		if(tear->IsReady())
+		{
+			Q->CastOnPosition(GGame->CursorPosition());
+		}
+		Q->CastOnPosition(GGame->CursorPosition());
+	}
+
+	if (!manamune->IsOwned() && !AutoTear->Enabled())
+		return;
+
+	if(manamune->IsOwned() && AutoTear->Enabled() && GUtility->IsPositionInFountain(player->GetPosition(), true, false))
+	{
+		if(manamune->IsReady())
+		{
+			Q->CastOnPosition(GGame->CursorPosition());
+		}
+	}
+}
+
 void Drawing()
 {
 	auto player = GEntityList->Player();
@@ -182,6 +255,9 @@ PLUGIN_EVENT(void) OnRender()
 
 PLUGIN_EVENT(void) OnGameUpdate()
 {
+
+	AutoStackTear();
+
 	if(GOrbwalking->GetOrbwalkingMode() == kModeCombo)
 	{
 		Combo();
@@ -191,6 +267,16 @@ PLUGIN_EVENT(void) OnGameUpdate()
 	{
 		Harass();
 		LastHit();
+	}
+
+	if(GOrbwalking->GetOrbwalkingMode() == kModeLastHit)
+	{
+		LastHit();
+	}
+
+	if(GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
+	{
+		LaneClear();
 	}
 }
 
@@ -203,7 +289,8 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 	GEventManager->AddEventHandler(kEventOnRender, OnRender);
 	GEventManager->AddEventHandler(kEventOnGameUpdate, OnGameUpdate);
 
-	GRender->NotificationEx(Color::LightBlue().Get(), 2, true, true, "Helalmoneys Urgot v1.0 LOADED");
+	GRender->NotificationEx(Color::LightBlue().Get(), 2, true, true, "Helalmoneys Urgot v2.0 LOADED");
+
 }
 
 PLUGIN_API void OnUnload()

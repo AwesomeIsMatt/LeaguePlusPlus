@@ -83,7 +83,7 @@ void LoadSpells()
 void Combo()
 {
 	auto player = GEntityList->Player();
-	auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
+	auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, W->Range());
 
 	if(ComboQ->Enabled() && Q->IsReady() && player->IsValidTarget(target, Q->Range()))
 	{
@@ -92,7 +92,12 @@ void Combo()
 
 	if(ComboW->Enabled() && W->IsReady() && player->IsValidTarget(target, W->Range()))
 	{
-		W->CastOnTarget(target, kHitChanceHigh);
+		auto targetDistance = (target->GetPosition() - GEntityList->Player()->GetPosition()).Length2D();
+
+		if (targetDistance > 600)
+		{
+			W->CastOnTarget(target, kHitChanceHigh);
+		}
 	}
 
 	if(ComboR->Enabled() && R->IsReady() && player->IsValidTarget(target, 1500))
@@ -248,7 +253,7 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 	GEventManager->AddEventHandler(kEventOnRender, OnRender);
 	GEventManager->AddEventHandler(kEventOnGameUpdate, OnGameUpdate);
 
-	GRender->NotificationEx(Color::LightBlue().Get(), 2, true, true, "Helalmoneys Ashe v1.1 LOADED");
+	GRender->NotificationEx(Color::LightBlue().Get(), 2, true, true, "Helalmoneys Ashe v1.2 LOADED");
 }
 
 PLUGIN_API void OnUnload()

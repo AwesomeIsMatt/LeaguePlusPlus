@@ -45,10 +45,10 @@ void Menu()
 		HarassManager = HarassMenu->AddInteger("ManaManager", 0, 100, 50);
 	}
 
-	MiscsMenu = MainMenu->AddMenu("Miscs");
+	/*MiscsMenu = MainMenu->AddMenu("Miscs");
 	{
 		AutoR = MiscsMenu->CheckBox("Use R", true);
-	}
+	}*/
 
 	Drawings = MainMenu->AddMenu("Drawings");
 	{
@@ -65,51 +65,46 @@ void LoadSpells()
 	R = GPluginSDK->CreateSpell2(kSlotR, kCircleCast, false, true, kCollidesWithNothing);
 	Q->SetOverrideRange(580);
 	W->SetOverrideRange(850);
-	//R->SetOverrideRange(400);
 
 }
 
+void CastR()
+{
+	auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
 
+	if (target->IsValidTarget(GEntityList->Player(), Q->Range()) && R->IsReady())
+	{
+		Vec3 pred;
+		GPrediction->GetFutureUnitPosition(target, 0.15f, true, pred);
+
+		R->CastOnPosition(pred);
+		lastcast = GGame->TickCount() + 1500;
+	}
+}
 
 void Combo()
 {
 	auto player = GEntityList->Player();
 	auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, Q->Range());
 
-	if(ComboQ->Enabled() && Q->IsReady() && player->IsValidTarget(target, Q->Range()))
+	if (ComboQ->Enabled() && Q->IsReady() && player->IsValidTarget(target, Q->Range()))
 	{
 		Q->CastOnUnit(target);
 	}
 
-	if(ComboW->Enabled() && W->IsReady() && player->IsValidTarget(target, W->Range()))
+	if (ComboW->Enabled() && W->IsReady() && player->IsValidTarget(target, W->Range()))
 	{
 		W->CastOnPlayer();
 	}
 
-	if(ComboR->Enabled() && R->IsReady() && player->IsValidTarget(target, Q->Range()))
+	if (ComboR->Enabled() && R->IsReady() && player->IsValidTarget(target, R->Range()))
 	{
-
-		if(R->CastOnTarget(target, kHitChanceHigh))
+		if (lastcast < GGame->TickCount())
 		{
-			lastcast = 0;
 
-			GGame->PrintChat("miau");
-		}
-		
-
-		if (lastcast == 0)
-		{
-			lastcast = GGame->TickCount() + 600;
-		}
-
-		if (lastcast != 0 && GGame->TickCount() > lastcast)
-		{
-			R->CastOnTarget(target, kHitChanceHigh);
-
-			GGame->PrintChat("wow wow");
+			CastR();
 		}
 	}
-
 
 }
 
@@ -125,22 +120,27 @@ void Harass()
 	}
 }
 
+/*
 void AutoMushRoom()
 {
+
+	
 	for(auto target : GEntityList->GetAllHeros(false, true))
 	{
 		auto lastPos = target->GetPosition();
-		if(!target->IsVisible())
+		if(!target->IsVisible() && !target->IsDead() && target != nullptr)
 		{
 			if (R->IsReady() && (GEntityList->Player()->GetPosition() - lastPos).Length2D() <= Q->Range())
 			{
-				Vec3 pred;
-				GPrediction->GetFutureUnitPosition(target, 0.15f, true, pred);
-				R->CastOnPosition(pred);
+				if (lastcast < GGame->TickCount())
+				{
+					CastR();
+				}
+
 			}
 		}
 	}
-}
+}*/
 
 void Drawing()
 {
@@ -179,7 +179,7 @@ PLUGIN_EVENT(void) OnRender()
 PLUGIN_EVENT(void) OnGameUpdate()
 {
 
-	AutoMushRoom();
+	//AutoMushRoom();
 
 	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
 	{
@@ -200,7 +200,7 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 	GEventManager->AddEventHandler(kEventOnRender, OnRender);
 	GEventManager->AddEventHandler(kEventOnGameUpdate, OnGameUpdate);
 
-	GRender->NotificationEx(Color::Green().Get(), 2, true, true, "Teemo loaded");
+	GRender->NotificationEx(Color::Green().Get(), 2, true, true, "Helalmoneys Teemo v2.0 - LOADED");
 
 
 
@@ -214,6 +214,6 @@ PLUGIN_API void OnUnload(IPluginSDK* IPluginSDK)
 	GEventManager->RemoveEventHandler(kEventOnRender, OnRender);
 	GEventManager->RemoveEventHandler(kEventOnGameUpdate, OnGameUpdate);
 
-	GRender->NotificationEx(Color::Green().Get(), 2, true, true, "UNLOADED");
+	GRender->NotificationEx(Color::Green().Get(), 2, true, true, "Teemo - UNLOADED");
 
 }

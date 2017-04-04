@@ -113,7 +113,7 @@ void Harass()
 	auto player = GEntityList->Player();
 	auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, Q->Range());
 
-	if(HarrasQ->Enabled() && Q->IsReady() && player->IsValidTarget(target, Q->Range()))
+	if(HarrasQ->Enabled() && Q->IsReady() && player->IsValidTarget(target, Q->Range()) && player->ManaPercent() >= HarassManager->GetInteger())
 	{
 		Q->CastOnUnit(target);
 		

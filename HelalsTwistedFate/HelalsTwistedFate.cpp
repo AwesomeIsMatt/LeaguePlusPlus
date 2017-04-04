@@ -1,6 +1,8 @@
 #include "PluginSDK.h"
 #include "Color.h"
 
+#define M_PI 3.14159265358979323846f
+
 
 PluginSetup("HelalsTwistedFate");
 
@@ -25,6 +27,7 @@ ISpell2* Q;
 ISpell2* W;
 ISpell2* E;
 ISpell2* R;
+
 
 
 void Menu()
@@ -84,8 +87,6 @@ void PickGoldCard()
 		if (GetAsyncKeyState(PickGold->GetInteger()))
 
 		{
-			if (GGame->IssueOrder(GEntityList->Player(), kMoveTo, GGame->CursorPosition()))
-			{
 
 				if (std::string(GEntityList->Player()->GetSpellBook()->GetName(kSlotW)) == "PickACard")
 				{
@@ -97,8 +98,6 @@ void PickGoldCard()
 					W->CastOnPlayer();
 				}
 
-			}
-
 		}
 		
 	}
@@ -106,6 +105,7 @@ void PickGoldCard()
 
 
 }
+
 
 //Für Combo und Anti Gapcloser
 void PickGoldCardCombo()
@@ -128,6 +128,12 @@ void PickGoldCardCombo()
 
 }
 
+static void DrawCircleMinimap(IRender *renderer, IGame *game, const Vec3 &position, const Vec4 &color, float radius, int quality = 30)
+{
+	
+}
+
+
 void PickBlueCard()
 {
 
@@ -137,8 +143,6 @@ void PickBlueCard()
 		if (GetAsyncKeyState(PickBlue->GetInteger()))
 
 		{
-			if (GGame->IssueOrder(GEntityList->Player(), kMoveTo, GGame->CursorPosition()))
-			{
 
 				if (std::string(GEntityList->Player()->GetSpellBook()->GetName(kSlotW)) == "PickACard")
 				{
@@ -149,8 +153,6 @@ void PickBlueCard()
 				{
 					W->CastOnPlayer();
 				}
-
-			}
 
 		}
 		
@@ -169,9 +171,6 @@ void PickRedCard()
 		if (GetAsyncKeyState(PickRed->GetInteger()))
 
 		{
-			if (GGame->IssueOrder(GEntityList->Player(), kMoveTo, GGame->CursorPosition()))
-			{
-
 				if (std::string(GEntityList->Player()->GetSpellBook()->GetName(kSlotW)) == "PickACard")
 				{
 					W->CastOnPlayer();
@@ -181,8 +180,6 @@ void PickRedCard()
 				{
 					W->CastOnPlayer();
 				}
-
-			}
 
 		}
 		
@@ -233,6 +230,11 @@ void RPing()
 
 	static int LastPingTime2;
 
+	auto player = GEntityList->Player();
+
+	if (player->IsDead())
+		return;
+
 	for (auto target : GEntityList->GetAllHeros(false, true))
 	{
 		if(!target->IsDead() && target->IsValidTarget())
@@ -277,6 +279,7 @@ void GoldCardAfterR()
 
 }
 
+
 PLUGIN_EVENT(void) OnGameUpdate()
 {
 
@@ -306,7 +309,7 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 	LoadSpells();
 	GEventManager->AddEventHandler(kEventOnGameUpdate, OnGameUpdate);
 
-	GRender->NotificationEx(Color::LightBlue().Get(), 2, true, true, "Helalmoneys Twisted Fate v1.0 LOADED");
+	GRender->NotificationEx(Color::LightBlue().Get(), 2, true, true, "Helalmoneys Twisted Fate v1.1 - LOADED");
 }
 
 PLUGIN_API void OnUnload()
@@ -314,7 +317,7 @@ PLUGIN_API void OnUnload()
 	MainMenu->Remove();
 	GEventManager->RemoveEventHandler(kEventOnGameUpdate, OnGameUpdate);
 
-	GRender->NotificationEx(Color::LightRed().Get(), 2, true, true, "TF UNLOADED");
+	GRender->NotificationEx(Color::LightRed().Get(), 2, true, true, "Twisted Fate - UNLOADED");
 
 }
 

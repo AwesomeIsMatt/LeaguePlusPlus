@@ -45,10 +45,13 @@ void Menu()
 		HarassManager = HarassMenu->AddInteger("ManaManager", 0, 100, 50);
 	}
 
-	/*MiscsMenu = MainMenu->AddMenu("Miscs");
+	MiscsMenu = MainMenu->AddMenu("Q Blacklist");
 	{
-		AutoR = MiscsMenu->CheckBox("Use R", true);
-	}*/
+		for (auto ally : GEntityList->GetAllHeros(false, true))
+		{
+			MiscsMenu->CheckBox(ally->ChampionName(), false);
+		}
+	}
 
 	Drawings = MainMenu->AddMenu("Drawings");
 	{
@@ -87,10 +90,22 @@ void Combo()
 	auto player = GEntityList->Player();
 	auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, Q->Range());
 
-	if (ComboQ->Enabled() && Q->IsReady() && player->IsValidTarget(target, Q->Range()))
+	for (auto ally : GEntityList->GetAllHeros(false, true))
 	{
-		Q->CastOnUnit(target);
+		IMenuOption * temp = MiscsMenu->GetOption(ally->ChampionName());
+
+			if (ComboQ->Enabled() && Q->IsReady() && player->IsValidTarget(target, Q->Range()) && !temp->Enabled())
+			{
+				if (target->HasBuff("ToxicShotParticle"))
+				{
+					Q->CastOnUnit(target);
+				}
+
+			}
+
+
 	}
+
 
 	if (ComboW->Enabled() && W->IsReady() && player->IsValidTarget(target, W->Range()))
 	{
@@ -115,8 +130,10 @@ void Harass()
 
 	if(HarrasQ->Enabled() && Q->IsReady() && player->IsValidTarget(target, Q->Range()) && player->ManaPercent() >= HarassManager->GetInteger())
 	{
-		Q->CastOnUnit(target);
-		
+		if (target->HasBuff("ToxicShotParticle"))
+		{
+			Q->CastOnUnit(target);
+		}
 	}
 }
 
@@ -200,7 +217,7 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 	GEventManager->AddEventHandler(kEventOnRender, OnRender);
 	GEventManager->AddEventHandler(kEventOnGameUpdate, OnGameUpdate);
 
-	GRender->NotificationEx(Color::Green().Get(), 2, true, true, "Helalmoneys Teemo v2.0 - LOADED");
+	GRender->NotificationEx(Color::Green().Get(), 2, true, true, "Helalmoneys Teemo v2.1 - LOADED");
 
 
 
